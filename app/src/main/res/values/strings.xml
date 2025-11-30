@@ -1,3 +1,76 @@
 <resources>
     <string name="app_name">Paint</string>
+
+    <!-- Common -->
+    <string name="common_ok">ОК</string>
+    <string name="common_cancel">Отмена</string>
+    <string name="common_save">Сохранить</string>
+    <string name="common_delete">Удалить</string>
+
+    <!-- Canvas / Editor -->
+    <string name="canvas_new_drawing">Новый рисунок</string>
+    <string name="canvas_nav_back">Назад</string>
+    <string name="canvas_action_undo">Отменить</string>
+    <string name="canvas_action_redo">Повторить</string>
+    <string name="canvas_action_export">Экспорт в галерею</string>
+    <string name="canvas_action_save_db">Сохранить в БД</string>
+    <string name="canvas_stroke_value">%1$dpx</string>
+    <string name="canvas_opacity_value">%1$d%%</string>
+    <string name="canvas_button_clear">Очистить</string>
+    <string name="canvas_toast_saved">Сохранено в БД</string>
+    <string name="canvas_toast_export_success">Экспортировано в галерею</string>
+    <string name="canvas_toast_export_error">Ошибка экспорта</string>
+    <string name="canvas_toast_error_with_message">Ошибка: %1$s</string>
+    <string name="canvas_toast_renamed">Название изменено</string>
+    <string name="canvas_default_name">Рисунок %1$d</string>
+    <string name="auto_save_time_pattern">dd.MM HH:mm</string>
+
+    <!-- Template dialog -->
+    <string name="template_dialog_title">Выберите соотношение сторон</string>
+    <string name="template_dialog_presets">Предустановленные соотношения:</string>
+    <string name="template_dialog_item">%1$s (%2$dx%3$d)</string>
+    <string name="template_dialog_custom_button">Задать свой размер</string>
+    <string name="ratio_1_1">1:1</string>
+    <string name="ratio_4_3">4:3</string>
+    <string name="ratio_3_4">3:4</string>
+    <string name="ratio_16_9">16:9</string>
+    <string name="ratio_9_16">9:16</string>
+    <string name="ratio_3_2">3:2</string>
+    <string name="ratio_2_3">2:3</string>
+
+    <!-- Custom size dialog -->
+    <string name="custom_size_title">Задать размер холста</string>
+    <string name="custom_size_width_label">Ширина (px)</string>
+    <string name="custom_size_height_label">Высота (px)</string>
+
+    <!-- Save dialog -->
+    <string name="save_dialog_title">Сохранить рисунок</string>
+    <string name="save_dialog_name_label">Название</string>
+
+    <!-- Export dialog -->
+    <string name="export_dialog_title">Экспорт изображения</string>
+    <string name="export_dialog_format_png">PNG</string>
+    <string name="export_dialog_format_jpeg">JPEG</string>
+
+    <!-- Stroke & opacity dialogs -->
+    <string name="stroke_dialog_title">Толщина линии</string>
+    <string name="opacity_dialog_title">Прозрачность</string>
+
+    <!-- Gallery -->
+    <string name="gallery_title">Мои рисунки</string>
+    <string name="gallery_create_new">Создать новый</string>
+    <string name="gallery_search_hint">Поиск</string>
+    <string name="gallery_empty_message">Нет сохраненных рисунков</string>
+    <string name="gallery_date_format">dd.MM.yyyy</string>
+
+    <!-- Delete dialog -->
+    <string name="delete_dialog_title">Удалить рисунок?</string>
+    <string name="delete_dialog_message">Вы уверены, что хотите удалить &quot;%1$s&quot;?</string>
+
+    <!-- Rename dialog -->
+    <string name="rename_dialog_title">Переименовать</string>
+
+    <!-- Export dialog buttons share common strings -->
+    <string name="color_picker_title">Выберите цвет</string>
+    <string name="color_picker_brightness">Яркость</string>
 </resources>
