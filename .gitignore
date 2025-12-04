@@ -72,3 +72,9 @@ lint/tmp/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Documentation and reports
+*.pdf
+*.docx
+*.doc
+содежаниеПЗ

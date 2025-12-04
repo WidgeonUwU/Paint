@@ -1,20 +1,23 @@
 package ru.sfedu.paint.ui.screens
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.sfedu.paint.data.model.DrawingTool
 import ru.sfedu.paint.data.model.PathData
@@ -24,26 +27,21 @@ import ru.sfedu.paint.ui.components.DrawingCanvas
 import ru.sfedu.paint.ui.components.ToolSelector
 import ru.sfedu.paint.ui.viewmodel.PaintViewModel
 import ru.sfedu.paint.util.ImageExporter
-import android.view.View
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntSize
 import kotlinx.coroutines.launch
 import ru.sfedu.paint.R
-import java.io.File
-import java.io.FileOutputStream
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,139 +122,276 @@ fun CanvasScreen(
         }
     }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onDoubleTap = {
-                                        if (currentDrawing != null) {
-                                            showRenameDialog = true
-                                        }
-                                    }
-                                )
-                            }
-                    ) {
-                        Text(currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing))
-                    }
-                },
-                navigationIcon = {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    if (isLandscape) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .width(48.dp)
+                    .fillMaxHeight()
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     IconButton(onClick = {
                         viewModel.forceSaveCurrentState()
                         onNavigateToGallery()
                     }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
                     }
-                },
-                actions = {
+                }
+                
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onDoubleTap = {
+                                    if (currentDrawing != null) {
+                                        showRenameDialog = true
+                                    }
+                                }
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing),
+                        modifier = Modifier.graphicsLayer { rotationZ = -90f },
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1
+                    )
+                }
+                
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     IconButton(onClick = { viewModel.undo() }) {
-                        Icon(
-                            painterResource(R.drawable.ic_undo),
-                            stringResource(R.string.canvas_action_undo)
-                        )
+                        Icon(painterResource(R.drawable.ic_undo), stringResource(R.string.canvas_action_undo))
                     }
                     IconButton(onClick = { viewModel.redo() }) {
-                        Icon(
-                            painterResource(R.drawable.ic_redo),
-                            stringResource(R.string.canvas_action_redo)
-                        )
+                        Icon(painterResource(R.drawable.ic_redo), stringResource(R.string.canvas_action_redo))
                     }
-                    IconButton(onClick = { 
-                        showExportDialog = true
-                    }) {
-                        Icon(
-                            painterResource(R.drawable.ic_save),
-                            stringResource(R.string.canvas_action_export),
-                            modifier = Modifier.size(20.dp)
-                        )
+                    IconButton(onClick = { showExportDialog = true }) {
+                        Icon(painterResource(R.drawable.ic_save), stringResource(R.string.canvas_action_export))
                     }
                     IconButton(onClick = { showSaveDialog = true }) {
-                        Icon(
-                            painterResource(R.drawable.ic_done),
-                            stringResource(R.string.canvas_action_save_db),
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Icon(painterResource(R.drawable.ic_done), stringResource(R.string.canvas_action_save_db))
                     }
                 }
-            )
-        },
-        bottomBar = {
-            Column {
-                ToolSelector(
-                    selectedTool = drawingState.currentTool,
-                    onToolSelected = { viewModel.setTool(it) }
-                )
-                ColorPalette(
-                    colors = paletteColors,
-                    selectedColor = drawingState.currentColor,
-                    onColorSelected = { viewModel.setColor(it) },
-                    onColorReplace = { index, color ->
-                        viewModel.replaceColorInPalette(index, color)
+            }
+            
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+            ) {
+                DrawingCanvas(
+                    modifier = Modifier.fillMaxSize(),
+                    paths = drawingState.paths,
+                    currentTool = drawingState.currentTool,
+                    currentColor = drawingState.currentColor,
+                    strokeWidth = drawingState.strokeWidth,
+                    backgroundColor = drawingState.backgroundColor,
+                    canvasWidth = drawingState.canvasWidth,
+                    canvasHeight = drawingState.canvasHeight,
+                    onPathDrawn = { pathData ->
+                        viewModel.addPath(pathData)
                     }
                 )
-                Row(
+            }
+            
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Button(
-                        onClick = { showStrokeWidthDialog = true },
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Icon(painterResource(R.drawable.ic_tick),
-                            stringResource(R.string.stroke_dialog_title),
-                            modifier = Modifier.padding(end = 2.dp))
-                        Text(stringResource(R.string.canvas_stroke_value, drawingState.strokeWidth.toInt()))
+                    ToolSelectorVertical(
+                        selectedTool = drawingState.currentTool,
+                        onToolSelected = { viewModel.setTool(it) }
+                    )
+                }
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    ColorPaletteVertical(
+                        colors = paletteColors,
+                        selectedColor = drawingState.currentColor,
+                        onColorSelected = { viewModel.setColor(it) },
+                        onColorReplace = { index, color ->
+                            viewModel.replaceColorInPalette(index, color)
+                        }
+                    )
+                }
+                
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    IconButton(onClick = { viewModel.clearCanvas() }) {
+                        Icon(painterResource(R.drawable.ic_clear), stringResource(R.string.canvas_button_clear))
                     }
-                    Button(
-                        onClick = { showOpacityDialog = true },
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Icon(painterResource(R.drawable.ic_trans),
-                            stringResource(R.string.opacity_dialog_title),
-                            modifier = Modifier.padding(end = 2.dp))
-                        Text(
-                            stringResource(
-                                R.string.canvas_opacity_value,
-                                (drawingState.currentAlpha * 100).toInt()
-                            )
-                        )
+                    IconButton(onClick = { showOpacityDialog = true }) {
+                        Icon(painterResource(R.drawable.ic_trans), stringResource(R.string.opacity_dialog_title))
                     }
-                    Button(
-                        onClick = { viewModel.clearCanvas() },
-                        modifier = Modifier.padding(4.dp)
-                    ) {
-                        Icon(painterResource(R.drawable.ic_clear),
-                            stringResource(R.string.canvas_button_clear))
+                    IconButton(onClick = { showStrokeWidthDialog = true }) {
+                        Icon(painterResource(R.drawable.ic_tick), stringResource(R.string.stroke_dialog_title))
                     }
                 }
             }
         }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            DrawingCanvas(
-                modifier = Modifier.fillMaxSize(),
-                paths = drawingState.paths,
-                currentTool = drawingState.currentTool,
-                currentColor = drawingState.currentColor,
-                strokeWidth = drawingState.strokeWidth,
-                backgroundColor = drawingState.backgroundColor,
-                canvasWidth = drawingState.canvasWidth,
-                canvasHeight = drawingState.canvasHeight,
-                onPathDrawn = { pathData ->
-                    viewModel.addPath(pathData)
+    } else {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .pointerInput(Unit) {
+                                    detectTapGestures(
+                                        onDoubleTap = {
+                                            if (currentDrawing != null) {
+                                                showRenameDialog = true
+                                            }
+                                        }
+                                    )
+                                }
+                        ) {
+                            Text(currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing))
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            viewModel.forceSaveCurrentState()
+                            onNavigateToGallery()
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { viewModel.undo() }) {
+                            Icon(
+                                painterResource(R.drawable.ic_undo),
+                                stringResource(R.string.canvas_action_undo)
+                            )
+                        }
+                        IconButton(onClick = { viewModel.redo() }) {
+                            Icon(
+                                painterResource(R.drawable.ic_redo),
+                                stringResource(R.string.canvas_action_redo)
+                            )
+                        }
+                        IconButton(onClick = { 
+                            showExportDialog = true
+                        }) {
+                            Icon(
+                                painterResource(R.drawable.ic_save),
+                                stringResource(R.string.canvas_action_export),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        IconButton(onClick = { showSaveDialog = true }) {
+                            Icon(
+                                painterResource(R.drawable.ic_done),
+                                stringResource(R.string.canvas_action_save_db),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                )
+            },
+            bottomBar = {
+                Column {
+                    ToolSelector(
+                        selectedTool = drawingState.currentTool,
+                        onToolSelected = { viewModel.setTool(it) }
+                    )
+                    ColorPalette(
+                        colors = paletteColors,
+                        selectedColor = drawingState.currentColor,
+                        onColorSelected = { viewModel.setColor(it) },
+                        onColorReplace = { index, color ->
+                            viewModel.replaceColorInPalette(index, color)
+                        }
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Button(
+                            onClick = { showStrokeWidthDialog = true },
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            Icon(painterResource(R.drawable.ic_tick),
+                                stringResource(R.string.stroke_dialog_title),
+                                modifier = Modifier.padding(end = 2.dp))
+                            Text(stringResource(R.string.canvas_stroke_value, drawingState.strokeWidth.toInt()))
+                        }
+                        Button(
+                            onClick = { showOpacityDialog = true },
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            Icon(painterResource(R.drawable.ic_trans),
+                                stringResource(R.string.opacity_dialog_title),
+                                modifier = Modifier.padding(end = 2.dp))
+                            Text(
+                                stringResource(
+                                    R.string.canvas_opacity_value,
+                                    (drawingState.currentAlpha * 100).toInt()
+                                )
+                            )
+                        }
+                        Button(
+                            onClick = { viewModel.clearCanvas() },
+                            modifier = Modifier.padding(4.dp)
+                        ) {
+                            Icon(painterResource(R.drawable.ic_clear),
+                                stringResource(R.string.canvas_button_clear))
+                        }
+                    }
                 }
-            )
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                DrawingCanvas(
+                    modifier = Modifier.fillMaxSize(),
+                    paths = drawingState.paths,
+                    currentTool = drawingState.currentTool,
+                    currentColor = drawingState.currentColor,
+                    strokeWidth = drawingState.strokeWidth,
+                    backgroundColor = drawingState.backgroundColor,
+                    canvasWidth = drawingState.canvasWidth,
+                    canvasHeight = drawingState.canvasHeight,
+                    onPathDrawn = { pathData ->
+                        viewModel.addPath(pathData)
+                    }
+                )
+            }
         }
     }
     
@@ -655,4 +790,94 @@ fun OpacityDialog(
         }
     )
 }
+
+@Composable
+fun ToolSelectorVertical(
+    selectedTool: DrawingTool,
+    onToolSelected: (DrawingTool) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        DrawingTool.entries.reversed().forEach { tool ->
+            val icon = when (tool) {
+                DrawingTool.PENCIL -> R.drawable.ic_pen
+                DrawingTool.ERASER -> R.drawable.ic_eraser
+                DrawingTool.RULER -> R.drawable.ic_ruler
+            }
+            IconButton(
+                onClick = { onToolSelected(tool) },
+                modifier = if (selectedTool == tool) {
+                    Modifier.background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        shape = MaterialTheme.shapes.small
+                    )
+                } else Modifier
+            ) {
+                Icon(
+                    painterResource(icon),
+                    contentDescription = null,
+                    tint = if (selectedTool == tool) 
+                        MaterialTheme.colorScheme.primary 
+                    else 
+                        MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ColorPaletteVertical(
+    colors: List<Color>,
+    selectedColor: Color,
+    onColorSelected: (Color) -> Unit,
+    onColorReplace: (Int, Color) -> Unit
+) {
+    var showColorPickerForIndex by remember { mutableStateOf<Int?>(null) }
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        colors.indices.reversed().forEach { index ->
+            val color = colors[index]
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(color, androidx.compose.foundation.shape.CircleShape)
+                    .then(
+                        if (color == selectedColor) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = androidx.compose.foundation.shape.CircleShape
+                            )
+                        } else Modifier
+                    )
+                    .pointerInput(index, color) {
+                        detectTapGestures(
+                            onDoubleTap = { showColorPickerForIndex = index },
+                            onTap = { onColorSelected(color) }
+                        )
+                    }
+            )
+        }
+    }
+    
+    showColorPickerForIndex?.let { index ->
+        val initialColor = colors.getOrNull(index) ?: Color.White
+        ru.sfedu.paint.ui.components.ColorPickerDialog(
+            initialColor = initialColor,
+            onDismiss = { showColorPickerForIndex = null },
+            onColorSelected = { newColor ->
+                onColorReplace(index, newColor)
+                onColorSelected(newColor)
+                showColorPickerForIndex = null
+            }
+        )
+    }
+}
+
 
