@@ -42,6 +42,12 @@ android {
     buildFeatures {
         compose = true
     }
+    
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = false
+        }
+    }
 }
 
 dependencies {
@@ -74,6 +80,10 @@ dependencies {
     testImplementation("androidx.room:room-testing:${libs.versions.room.get()}")
     testImplementation("androidx.test:core:1.5.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${libs.versions.coroutines.get()}")
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui)
+    testImplementation(libs.androidx.compose.ui.graphics)
+    testImplementation("org.json:json:20240303")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

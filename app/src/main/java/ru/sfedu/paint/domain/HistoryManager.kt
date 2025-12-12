@@ -22,7 +22,11 @@ class HistoryManager(private val maxHistorySize: Int = 50) {
         if (undoStack.isEmpty()) return null
         
         redoStack.add(currentPaths.toList())
-        return undoStack.removeLastOrNull()
+        if (undoStack.size == 1) {
+            return undoStack.removeLastOrNull()
+        }
+        undoStack.removeLastOrNull()
+        return undoStack.lastOrNull()
     }
     
     fun redo(currentPaths: List<PathData>): List<PathData>? {
