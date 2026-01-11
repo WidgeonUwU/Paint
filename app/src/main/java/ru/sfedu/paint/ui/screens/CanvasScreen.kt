@@ -258,139 +258,139 @@ fun CanvasScreen(
             }
         }
     } else {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .pointerInput(Unit) {
-                                    detectTapGestures(
-                                        onDoubleTap = {
-                                            if (currentDrawing != null) {
-                                                showRenameDialog = true
-                                            }
-                                        }
-                                    )
-                                }
-                        ) {
-                            Text(currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing))
-                        }
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            viewModel.forceSaveCurrentState()
-                            onNavigateToGallery()
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { viewModel.undo() }) {
-                            Icon(
-                                painterResource(R.drawable.ic_undo),
-                                stringResource(R.string.canvas_action_undo)
-                            )
-                        }
-                        IconButton(onClick = { viewModel.redo() }) {
-                            Icon(
-                                painterResource(R.drawable.ic_redo),
-                                stringResource(R.string.canvas_action_redo)
-                            )
-                        }
-                        IconButton(onClick = { 
-                            showExportDialog = true
-                        }) {
-                            Icon(
-                                painterResource(R.drawable.ic_save),
-                                stringResource(R.string.canvas_action_export),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                        IconButton(onClick = { showSaveDialog = true }) {
-                            Icon(
-                                painterResource(R.drawable.ic_done),
-                                stringResource(R.string.canvas_action_save_db),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                )
-            },
-            bottomBar = {
-                Column {
-                    ToolSelector(
-                        selectedTool = drawingState.currentTool,
-                        onToolSelected = { viewModel.setTool(it) }
-                    )
-                    ColorPalette(
-                        colors = paletteColors,
-                        selectedColor = drawingState.currentColor,
-                        onColorSelected = { viewModel.setColor(it) },
-                        onColorReplace = { index, color ->
-                            viewModel.replaceColorInPalette(index, color)
-                        }
-                    )
-                    Row(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Button(
-                            onClick = { showStrokeWidthDialog = true },
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Icon(painterResource(R.drawable.ic_tick),
-                                stringResource(R.string.stroke_dialog_title),
-                                modifier = Modifier.padding(end = 2.dp))
-                            Text(stringResource(R.string.canvas_stroke_value, drawingState.strokeWidth.toInt()))
-                        }
-                        Button(
-                            onClick = { showOpacityDialog = true },
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Icon(painterResource(R.drawable.ic_trans),
-                                stringResource(R.string.opacity_dialog_title),
-                                modifier = Modifier.padding(end = 2.dp))
-                            Text(
-                                stringResource(
-                                    R.string.canvas_opacity_value,
-                                    (drawingState.currentAlpha * 100).toInt()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = {
+                                        if (currentDrawing != null) {
+                                            showRenameDialog = true
+                                        }
+                                    }
                                 )
+                            }
+                    ) {
+                        Text(currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing))
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        viewModel.forceSaveCurrentState()
+                        onNavigateToGallery()
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.undo() }) {
+                        Icon(
+                            painterResource(R.drawable.ic_undo),
+                            stringResource(R.string.canvas_action_undo)
+                        )
+                    }
+                    IconButton(onClick = { viewModel.redo() }) {
+                        Icon(
+                            painterResource(R.drawable.ic_redo),
+                            stringResource(R.string.canvas_action_redo)
+                        )
+                    }
+                    IconButton(onClick = { 
+                        showExportDialog = true
+                    }) {
+                        Icon(
+                            painterResource(R.drawable.ic_save),
+                            stringResource(R.string.canvas_action_export),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    IconButton(onClick = { showSaveDialog = true }) {
+                        Icon(
+                            painterResource(R.drawable.ic_done),
+                            stringResource(R.string.canvas_action_save_db),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            Column {
+                ToolSelector(
+                    selectedTool = drawingState.currentTool,
+                    onToolSelected = { viewModel.setTool(it) }
+                )
+                ColorPalette(
+                    colors = paletteColors,
+                    selectedColor = drawingState.currentColor,
+                    onColorSelected = { viewModel.setColor(it) },
+                    onColorReplace = { index, color ->
+                        viewModel.replaceColorInPalette(index, color)
+                    }
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = { showStrokeWidthDialog = true },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_tick),
+                            stringResource(R.string.stroke_dialog_title),
+                            modifier = Modifier.padding(end = 2.dp))
+                        Text(stringResource(R.string.canvas_stroke_value, drawingState.strokeWidth.toInt()))
+                    }
+                    Button(
+                        onClick = { showOpacityDialog = true },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_trans),
+                            stringResource(R.string.opacity_dialog_title),
+                            modifier = Modifier.padding(end = 2.dp))
+                        Text(
+                            stringResource(
+                                R.string.canvas_opacity_value,
+                                (drawingState.currentAlpha * 100).toInt()
                             )
-                        }
-                        Button(
-                            onClick = { viewModel.clearCanvas() },
-                            modifier = Modifier.padding(4.dp)
-                        ) {
-                            Icon(painterResource(R.drawable.ic_clear),
-                                stringResource(R.string.canvas_button_clear))
-                        }
+                        )
+                    }
+                    Button(
+                        onClick = { viewModel.clearCanvas() },
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_clear),
+                            stringResource(R.string.canvas_button_clear))
                     }
                 }
             }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                DrawingCanvas(
-                    modifier = Modifier.fillMaxSize(),
-                    paths = drawingState.paths,
-                    currentTool = drawingState.currentTool,
-                    currentColor = drawingState.currentColor,
-                    strokeWidth = drawingState.strokeWidth,
-                    backgroundColor = drawingState.backgroundColor,
-                    canvasWidth = drawingState.canvasWidth,
-                    canvasHeight = drawingState.canvasHeight,
-                    onPathDrawn = { pathData ->
-                        viewModel.addPath(pathData)
-                    }
-                )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            DrawingCanvas(
+                modifier = Modifier.fillMaxSize(),
+                paths = drawingState.paths,
+                currentTool = drawingState.currentTool,
+                currentColor = drawingState.currentColor,
+                strokeWidth = drawingState.strokeWidth,
+                backgroundColor = drawingState.backgroundColor,
+                canvasWidth = drawingState.canvasWidth,
+                canvasHeight = drawingState.canvasHeight,
+                onPathDrawn = { pathData ->
+                    viewModel.addPath(pathData)
+                }
+            )
             }
         }
     }
