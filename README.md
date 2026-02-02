@@ -37,18 +37,25 @@ Android-приложение для рисования, разработанно
 - **Тестирование:** JUnit
 
 ## Тестирование
+В проекте реализовано модульное тестирование бизнес‑логики приложения.
 
-В проекте реализовано модульное тестирование бизнес-логики приложения.
+### Набор юнит‑тестов
+- `app/src/test/java/ru/sfedu/paint/data/database/ConvertersTest.kt`
+- `app/src/test/java/ru/sfedu/paint/domain/HistoryManagerTest.kt`
+- `app/src/test/java/ru/sfedu/paint/util/JsonCompressionTest.kt`
+- `app/src/test/java/ru/sfedu/paint/util/PathSerializerTest.kt`
 
-### Особенности тестирования:
-- Написано более 50 модульных тестов
-- Покрыты ключевые сценарии работы приложения
-- Проверены граничные и негативные случаи:
-  - работа истории действий
-  - сохранение и восстановление состояния
-  - обработка некорректных данных
-- Тесты не зависят от UI и выполняются изолированно
+## Результаты тестирования
+Актуальные результаты отражены в отчетах:
+- `app/src/test/java/ru/sfedu/paint/QA/release-test-report.md` — отчет о выпускном тестировании
+- `app/src/test/java/ru/sfedu/paint/QA/bug-reports.md` — найденные дефекты
 
+## Артефакты QA
+- `app/src/test/java/ru/sfedu/paint/QA/test-plan.md` — тест‑план
+- `app/src/test/java/ru/sfedu/paint/QA/test-cases.md` — функциональные тест‑кейсы
+- `app/src/test/java/ru/sfedu/paint/QA/test-checklist.md` — регрессионный чек‑лист
+- `app/src/test/java/ru/sfedu/paint/QA/risk-analysis.md` — анализ рисков
+- `app/src/test/java/ru/sfedu/paint/QA/bug-reports.md` — баг‑репорты
 
 ## Что было сделано в рамках проекта
 
