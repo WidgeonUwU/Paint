@@ -38,10 +38,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.sfedu.paint.R
+import ru.sfedu.paint.ui.testtags.TestTags
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,10 +140,13 @@ fun CanvasScreen(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = {
-                        viewModel.forceSaveCurrentState()
-                        onNavigateToGallery()
-                    }) {
+                    IconButton(
+                        onClick = {
+                            viewModel.forceSaveCurrentState()
+                            onNavigateToGallery()
+                        },
+                        modifier = Modifier.testTag(TestTags.CANVAS_BACK)
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
                     }
                 }
@@ -160,23 +167,37 @@ fun CanvasScreen(
                 ) {
                     Text(
                         text = currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing),
-                        modifier = Modifier.graphicsLayer { rotationZ = -90f },
+                        modifier = Modifier
+                            .graphicsLayer { rotationZ = -90f }
+                            .testTag(TestTags.CANVAS_TITLE),
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 1
                     )
                 }
                 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = { viewModel.undo() }) {
+                    IconButton(
+                        onClick = { viewModel.undo() },
+                        modifier = Modifier.testTag(TestTags.CANVAS_UNDO)
+                    ) {
                         Icon(painterResource(R.drawable.ic_undo), stringResource(R.string.canvas_action_undo))
                     }
-                    IconButton(onClick = { viewModel.redo() }) {
+                    IconButton(
+                        onClick = { viewModel.redo() },
+                        modifier = Modifier.testTag(TestTags.CANVAS_REDO)
+                    ) {
                         Icon(painterResource(R.drawable.ic_redo), stringResource(R.string.canvas_action_redo))
                     }
-                    IconButton(onClick = { showExportDialog = true }) {
+                    IconButton(
+                        onClick = { showExportDialog = true },
+                        modifier = Modifier.testTag(TestTags.CANVAS_EXPORT)
+                    ) {
                         Icon(painterResource(R.drawable.ic_save), stringResource(R.string.canvas_action_export))
                     }
-                    IconButton(onClick = { showSaveDialog = true }) {
+                    IconButton(
+                        onClick = { showSaveDialog = true },
+                        modifier = Modifier.testTag(TestTags.CANVAS_SAVE)
+                    ) {
                         Icon(painterResource(R.drawable.ic_done), stringResource(R.string.canvas_action_save_db))
                     }
                 }
@@ -188,7 +209,7 @@ fun CanvasScreen(
                     .fillMaxHeight()
             ) {
                 DrawingCanvas(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().testTag(TestTags.CANVAS),
                     paths = drawingState.paths,
                     currentTool = drawingState.currentTool,
                     currentColor = drawingState.currentColor,
@@ -245,13 +266,22 @@ fun CanvasScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    IconButton(onClick = { viewModel.clearCanvas() }) {
+                    IconButton(
+                        onClick = { viewModel.clearCanvas() },
+                        modifier = Modifier.testTag(TestTags.CANVAS_CLEAR)
+                    ) {
                         Icon(painterResource(R.drawable.ic_clear), stringResource(R.string.canvas_button_clear))
                     }
-                    IconButton(onClick = { showOpacityDialog = true }) {
+                    IconButton(
+                        onClick = { showOpacityDialog = true },
+                        modifier = Modifier.testTag(TestTags.CANVAS_OPACITY)
+                    ) {
                         Icon(painterResource(R.drawable.ic_trans), stringResource(R.string.opacity_dialog_title))
                     }
-                    IconButton(onClick = { showStrokeWidthDialog = true }) {
+                    IconButton(
+                        onClick = { showStrokeWidthDialog = true },
+                        modifier = Modifier.testTag(TestTags.CANVAS_STROKE)
+                    ) {
                         Icon(painterResource(R.drawable.ic_tick), stringResource(R.string.stroke_dialog_title))
                     }
                 }
@@ -275,40 +305,58 @@ fun CanvasScreen(
                                 )
                             }
                     ) {
-                        Text(currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing))
+                        Text(
+                            currentDrawing?.name ?: stringResource(R.string.canvas_new_drawing),
+                            modifier = Modifier.testTag(TestTags.CANVAS_TITLE)
+                        )
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        viewModel.forceSaveCurrentState()
-                        onNavigateToGallery()
-                    }) {
+                    IconButton(
+                        onClick = {
+                            viewModel.forceSaveCurrentState()
+                            onNavigateToGallery()
+                        },
+                        modifier = Modifier.testTag(TestTags.CANVAS_BACK)
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.canvas_nav_back))
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.undo() }) {
+                    IconButton(
+                        onClick = { viewModel.undo() },
+                        modifier = Modifier.testTag(TestTags.CANVAS_UNDO)
+                    ) {
                         Icon(
                             painterResource(R.drawable.ic_undo),
                             stringResource(R.string.canvas_action_undo)
                         )
                     }
-                    IconButton(onClick = { viewModel.redo() }) {
+                    IconButton(
+                        onClick = { viewModel.redo() },
+                        modifier = Modifier.testTag(TestTags.CANVAS_REDO)
+                    ) {
                         Icon(
                             painterResource(R.drawable.ic_redo),
                             stringResource(R.string.canvas_action_redo)
                         )
                     }
-                    IconButton(onClick = { 
-                        showExportDialog = true
-                    }) {
+                    IconButton(
+                        onClick = { 
+                            showExportDialog = true
+                        },
+                        modifier = Modifier.testTag(TestTags.CANVAS_EXPORT)
+                    ) {
                         Icon(
                             painterResource(R.drawable.ic_save),
                             stringResource(R.string.canvas_action_export),
                             modifier = Modifier.size(20.dp)
                         )
                     }
-                    IconButton(onClick = { showSaveDialog = true }) {
+                    IconButton(
+                        onClick = { showSaveDialog = true },
+                        modifier = Modifier.testTag(TestTags.CANVAS_SAVE)
+                    ) {
                         Icon(
                             painterResource(R.drawable.ic_done),
                             stringResource(R.string.canvas_action_save_db),
@@ -341,7 +389,9 @@ fun CanvasScreen(
                 ) {
                     Button(
                         onClick = { showStrokeWidthDialog = true },
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .testTag(TestTags.CANVAS_STROKE)
                     ) {
                         Icon(painterResource(R.drawable.ic_tick),
                             stringResource(R.string.stroke_dialog_title),
@@ -350,7 +400,9 @@ fun CanvasScreen(
                     }
                     Button(
                         onClick = { showOpacityDialog = true },
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .testTag(TestTags.CANVAS_OPACITY)
                     ) {
                         Icon(painterResource(R.drawable.ic_trans),
                             stringResource(R.string.opacity_dialog_title),
@@ -364,7 +416,9 @@ fun CanvasScreen(
                     }
                     Button(
                         onClick = { viewModel.clearCanvas() },
-                        modifier = Modifier.padding(4.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .testTag(TestTags.CANVAS_CLEAR)
                     ) {
                         Icon(painterResource(R.drawable.ic_clear),
                             stringResource(R.string.canvas_button_clear))
@@ -379,7 +433,7 @@ fun CanvasScreen(
                 .padding(paddingValues)
         ) {
             DrawingCanvas(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().testTag(TestTags.CANVAS),
                 paths = drawingState.paths,
                 currentTool = drawingState.currentTool,
                 currentColor = drawingState.currentColor,
@@ -412,6 +466,12 @@ fun CanvasScreen(
     
     val defaultDrawingName = stringResource(R.string.canvas_default_name, System.currentTimeMillis())
 
+    suspend fun showToast(message: String) {
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     if (showSaveDialog) {
         SaveDialog(
             initialName = currentDrawing?.name ?: defaultDrawingName,
@@ -424,11 +484,7 @@ fun CanvasScreen(
                         viewModel.updateDrawing(name)
                     }
                     showSaveDialog = false
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.canvas_toast_saved),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast(context.getString(R.string.canvas_toast_saved))
                 }
             }
         )
@@ -455,26 +511,14 @@ fun CanvasScreen(
                         
                         val uri = viewModel.exportToGallery(bitmap, format)
                         if (uri != null) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.canvas_toast_export_success),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showToast(context.getString(R.string.canvas_toast_export_success))
                         } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.canvas_toast_export_error),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            showToast(context.getString(R.string.canvas_toast_export_error))
                         }
                         bitmap.recycle()
                     } catch (e: Exception) {
                         val message = e.message ?: ""
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.canvas_toast_error_with_message, message),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showToast(context.getString(R.string.canvas_toast_error_with_message, message))
                     }
                     showExportDialog = false
                 }
@@ -514,11 +558,7 @@ fun CanvasScreen(
                     scope.launch {
                         viewModel.updateDrawing(newName)
                         showRenameDialog = false
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.canvas_toast_renamed),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        showToast(context.getString(R.string.canvas_toast_renamed))
                     }
                 }
             )
@@ -569,7 +609,7 @@ fun TemplateDialog(
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    aspectRatios.forEach { (nameRes, ratio) ->
+                    aspectRatios.forEachIndexed { index, (nameRes, ratio) ->
                         val name = stringResource(nameRes)
                         val aspectRatio = ratio.first / ratio.second
                         val width = baseWidth.toInt()
@@ -579,6 +619,7 @@ fun TemplateDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(4.dp)
+                                .testTag("${TestTags.TEMPLATE_PRESET_PREFIX}$index")
                                 .clickable {
                                     val template = ru.sfedu.paint.data.model.CanvasTemplate(
                                         name,
@@ -599,7 +640,9 @@ fun TemplateDialog(
                     
                     Button(
                         onClick = { showCustomSize = true },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(TestTags.TEMPLATE_CUSTOM_BUTTON)
                     ) {
                         Text(stringResource(R.string.template_dialog_custom_button))
                     }
@@ -633,14 +676,18 @@ fun CustomSizeDialog(
                     value = width,
                     onValueChange = { width = it },
                     label = { Text(stringResource(R.string.custom_size_width_label)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(TestTags.CUSTOM_WIDTH_INPUT)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = height,
                     onValueChange = { height = it },
                     label = { Text(stringResource(R.string.custom_size_height_label)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag(TestTags.CUSTOM_HEIGHT_INPUT)
                 )
             }
         },
@@ -650,13 +697,17 @@ fun CustomSizeDialog(
                     val w = width.toIntOrNull() ?: 1920
                     val h = height.toIntOrNull() ?: 1080
                     onConfirm(w.toString(), h.toString())
-                }
+                },
+                modifier = Modifier.testTag(TestTags.CUSTOM_CONFIRM)
             ) {
                 Text(stringResource(R.string.common_ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TestTags.CUSTOM_CANCEL)
+            ) {
                 Text(stringResource(R.string.common_cancel))
             }
         }
@@ -679,16 +730,24 @@ fun SaveDialog(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(R.string.save_dialog_name_label)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestTags.SAVE_INPUT)
             )
         },
         confirmButton = {
-            TextButton(onClick = { onSave(name) }) {
+            TextButton(
+                onClick = { onSave(name) },
+                modifier = Modifier.testTag(TestTags.SAVE_CONFIRM)
+            ) {
                 Text(stringResource(R.string.common_save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TestTags.SAVE_CANCEL)
+            ) {
                 Text(stringResource(R.string.common_cancel))
             }
         }
@@ -701,20 +760,30 @@ fun ExportDialog(
     onExport: (String) -> Unit
 ) {
     AlertDialog(
+        modifier = Modifier.testTag(TestTags.EXPORT_DIALOG),
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.export_dialog_title)) },
         text = {
             Column {
-                TextButton(onClick = { onExport("PNG") }) {
+                TextButton(
+                    onClick = { onExport("PNG") },
+                    modifier = Modifier.testTag(TestTags.EXPORT_PNG)
+                ) {
                     Text(stringResource(R.string.export_dialog_format_png))
                 }
-                TextButton(onClick = { onExport("JPEG") }) {
+                TextButton(
+                    onClick = { onExport("JPEG") },
+                    modifier = Modifier.testTag(TestTags.EXPORT_JPEG)
+                ) {
                     Text(stringResource(R.string.export_dialog_format_jpeg))
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TestTags.EXPORT_CANCEL)
+            ) {
                 Text(stringResource(R.string.common_cancel))
             }
         }
@@ -806,14 +875,15 @@ fun ToolSelectorVertical(
                 DrawingTool.ERASER -> R.drawable.ic_eraser
                 DrawingTool.RULER -> R.drawable.ic_ruler
             }
+            val baseModifier = if (selectedTool == tool) {
+                Modifier.background(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.small
+                )
+            } else Modifier
             IconButton(
                 onClick = { onToolSelected(tool) },
-                modifier = if (selectedTool == tool) {
-                    Modifier.background(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        shape = MaterialTheme.shapes.small
-                    )
-                } else Modifier
+                modifier = baseModifier.then(Modifier.testTag(TestTags.toolTag(tool)))
             ) {
                 Icon(
                     painterResource(icon),
@@ -856,6 +926,7 @@ fun ColorPaletteVertical(
                             )
                         } else Modifier
                     )
+                    .testTag(TestTags.paletteColorTag(index))
                     .pointerInput(index, color) {
                         detectTapGestures(
                             onDoubleTap = { showColorPickerForIndex = index },
@@ -879,5 +950,4 @@ fun ColorPaletteVertical(
         )
     }
 }
-
 

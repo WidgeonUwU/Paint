@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import ru.sfedu.paint.R
 import ru.sfedu.paint.data.model.DrawingTool
+import androidx.compose.ui.platform.testTag
+import ru.sfedu.paint.ui.testtags.TestTags
 
 @Composable
 fun ToolSelector(
@@ -39,19 +41,22 @@ fun ToolSelector(
             tool = DrawingTool.PENCIL,
             icon = R.drawable.ic_pen,
             isSelected = selectedTool == DrawingTool.PENCIL,
-            onClick = { onToolSelected(DrawingTool.PENCIL) }
+            onClick = { onToolSelected(DrawingTool.PENCIL) },
+            tag = TestTags.toolTag(DrawingTool.PENCIL)
         )
         ToolButton(
             tool = DrawingTool.ERASER,
             icon = R.drawable.ic_eraser,
             isSelected = selectedTool == DrawingTool.ERASER,
-            onClick = { onToolSelected(DrawingTool.ERASER) }
+            onClick = { onToolSelected(DrawingTool.ERASER) },
+            tag = TestTags.toolTag(DrawingTool.ERASER)
         )
         ToolButton(
             tool = DrawingTool.RULER,
             icon = R.drawable.ic_ruler,
             isSelected = selectedTool == DrawingTool.RULER,
-            onClick = { onToolSelected(DrawingTool.RULER) }
+            onClick = { onToolSelected(DrawingTool.RULER) },
+            tag = TestTags.toolTag(DrawingTool.RULER)
         )
     }
 }
@@ -61,10 +66,12 @@ private fun ToolButton(
     tool: DrawingTool,
     icon: Int,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    tag: String
 ) {
     Column(
         modifier = Modifier
+            .testTag(tag)
             .clickable { onClick() }
             .padding(8.dp)
             .background(

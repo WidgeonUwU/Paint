@@ -22,12 +22,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ru.sfedu.paint.data.model.Drawing
 import ru.sfedu.paint.ui.viewmodel.GalleryViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import ru.sfedu.paint.R
+import ru.sfedu.paint.ui.testtags.TestTags
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +52,10 @@ fun GalleryScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.gallery_title)) },
                 actions = {
-                    IconButton(onClick = onCreateNew) {
+                    IconButton(
+                        onClick = onCreateNew,
+                        modifier = Modifier.testTag(TestTags.GALLERY_CREATE_BUTTON)
+                    ) {
                         Icon(Icons.Default.Add, stringResource(R.string.gallery_create_new))
                     }
                 }
@@ -69,14 +74,18 @@ fun GalleryScreen(
                 leadingIcon = { Icon(Icons.Default.Search, null) },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = "" }) {
+                        IconButton(
+                            onClick = { searchQuery = "" },
+                            modifier = Modifier.testTag(TestTags.GALLERY_CLEAR_SEARCH)
+                        ) {
                             Icon(Icons.Default.Clear, null)
                         }
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .testTag(TestTags.GALLERY_SEARCH),
                 singleLine = true
             )
             
@@ -109,7 +118,10 @@ fun GalleryScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = onCreateNew) {
+                        Button(
+                            onClick = onCreateNew,
+                            modifier = Modifier.testTag(TestTags.GALLERY_EMPTY_CREATE_BUTTON)
+                        ) {
                             Icon(Icons.Default.Add, null)
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(stringResource(R.string.gallery_create_new))
@@ -121,7 +133,8 @@ fun GalleryScreen(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.testTag(TestTags.GALLERY_GRID)
                 ) {
                     items(drawings) { drawing ->
                         DrawingCard(
@@ -168,6 +181,7 @@ fun DrawingCard(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
+            .testTag("${TestTags.GALLERY_CARD_PREFIX}${drawing.id}")
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -232,13 +246,17 @@ fun DrawingCard(
             ) {
                 IconButton(
                     onClick = { showRenameDialog = true },
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .testTag(TestTags.GALLERY_RENAME)
                 ) {
                     Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
                 }
                 IconButton(
                     onClick = onDelete,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .testTag(TestTags.GALLERY_DELETE)
                 ) {
                     Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
                 }
@@ -269,12 +287,18 @@ fun DeleteDialog(
         title = { Text(stringResource(R.string.delete_dialog_title)) },
         text = { Text(stringResource(R.string.delete_dialog_message, drawing.name)) },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(
+                onClick = onConfirm,
+                modifier = Modifier.testTag(TestTags.GALLERY_DELETE_CONFIRM)
+            ) {
                 Text(stringResource(R.string.common_delete), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TestTags.GALLERY_DELETE_CANCEL)
+            ) {
                 Text(stringResource(R.string.common_cancel))
             }
         }
@@ -297,16 +321,24 @@ fun RenameDialog(
                 value = name,
                 onValueChange = { name = it },
                 label = { Text(stringResource(R.string.save_dialog_name_label)) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag(TestTags.RENAME_INPUT)
             )
         },
         confirmButton = {
-            TextButton(onClick = { onRename(name) }) {
+            TextButton(
+                onClick = { onRename(name) },
+                modifier = Modifier.testTag(TestTags.RENAME_CONFIRM)
+            ) {
                 Text(stringResource(R.string.common_save))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.testTag(TestTags.RENAME_CANCEL)
+            ) {
                 Text(stringResource(R.string.common_cancel))
             }
         }

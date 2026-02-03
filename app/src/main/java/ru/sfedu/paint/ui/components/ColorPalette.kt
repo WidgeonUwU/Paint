@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.testTag
+import ru.sfedu.paint.ui.testtags.TestTags
 
 @Composable
 fun ColorPalette(
@@ -40,6 +42,7 @@ fun ColorPalette(
                         color = MaterialTheme.colorScheme.primary,
                         shape = CircleShape
                     )
+                    .testTag(TestTags.paletteColorTag(index))
                     .pointerInput(index, color) {
                         detectTapGestures(
                             onDoubleTap = {
